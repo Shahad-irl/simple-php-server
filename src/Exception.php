@@ -1,3 +1,5 @@
-<?php namespace ClasCats\Sttion\PHPServer;
+<?php
 
-class Expection extends \Exception {}
+namespace vrDOM\station\PHPServer;
+
+class Exception extends \Exception {}
