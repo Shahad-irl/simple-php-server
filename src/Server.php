@@ -1,96 +1,29 @@
 <?php
 
-namespace vrDOM\station\PHPServer;
-
-use vrDOM\station\PHPServer\Exception;
-use vrDOM\station\PHPServer\Request;
-use vrDOM\station\PHPServer\Response;
-
+/**
+ * Server class for handling HTTP requests and sending responses.
+ */
 class Server
 {
-    /**
-     * The current host
-     *
-     * @var string
-     */
-    protected string $host;
+    private Response $response;
 
     /**
-     * The current port
-     *
-     * @var int
+     * Initialize the Server with a Response instance.
      */
-    protected int $port;
+    public function __construct()
+    {
+        $this->response = new Response();
+    }
 
     /**
-     * The binded socket
-     * 
-     * @var \Socket|null
+     * Handle an incoming HTTP request.
      */
-    protected ?\Socket $socket = null;
-
-    public function __construct(string $host, int $port)
+    public function handleRequest(): void
     {
-        $this->host = $host;
-        $this->port = $port;
-
-        $this->createSocket();
-        $this->bind();
-    }
-
-    protected function createSocket(): void
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-        if (!$this->socket) {
-            throw new Exception('Failed to create socket: ' . socket_strerror(socket_last_error()));
-        }
-    }
-
-    protected function bind(): void
-    {
-        if (!socket_bind($this->socket, $this->host, $this->port)) {
-            throw new Exception(
-                sprintf(
-                    'Could not bind to %s:%d - %s',
-                    $this->host,
-                    $this->port,
-                    socket_strerror(socket_last_error())
-                )
-            );
-        }
-    }
-
-    public function listen(callable $callback): void
-    {
-        if (!is_callable($callback)) {
-            throw new Exception('The given argument should be callable.');
-        }
-
-        while (true) {
-            socket_listen($this->socket);
-
-            $client = socket_accept($this->socket);
-            if (!$client) {
-                continue;
-            }
-
-            $header = socket_read($client, 4096);
-            if (!$header) {
-                socket_close($client);
-                continue;
-            }
-
-            $request = Request::withHeaderString($header);
-            $response = $callback($request);
-
-            if (!$response instanceof Response) {
-                $response = Response::error(404);
-            }
-
-            $responseString = (string) $response;
-            socket_write($client, $responseString, strlen($responseString));
-            socket_close($client);
-        }
+        // Example handling logic
+        $this->response->setStatusCode(200);
+        $this->response->addHeader('Content-Type', 'application/json');
+        $this->response->setBody(json_encode(['message' => 'Hello, world!']));
+        $this->response->send();
     }
 }

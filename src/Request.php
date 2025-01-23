@@ -1,134 +1,130 @@
-<?php namespace vrDOM\station\PHPServer;
+<?php
 
-use vrDOM\station\PHPServer\Expection;
+namespace vrDOM\station\PHPServer;
 
+use vrDOM\station\PHPServer\Exception;
+
+/**
+ * Handles HTTP requests and their associated data.
+ */
 class Request
 {
     /**
-     * the requwst method
+     * The request method.
+     *
      * @var string
      */
-    protected $method = null;
+    protected ?string $method = null;
 
     /**
-     * the requesrr uri 
+     * The request URI.
+     *
      * @var string
      */
-    protected $uri = null;
+    protected ?string $uri = null;
 
     /**
-     * the request params
-     * 
-     *  @var array
+     * The request parameters.
+     *
+     * @var array
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
-     /**
-	 * The request params
-	 *
-	 * @var array
-	 */
-	protected $headers = [];
-	
-	/**
-	 * Create new request instance using a string header
-	 *
-	 * @param string 			$header
-	 * @return Request
-	 */
-	public static function withHeaderString( $header )
-	{
-		$lines = explode( "\n", $header );
-		
-		// method and uri
-		list( $method, $uri ) = explode( ' ', array_shift( $lines ) );
-		
-		$headers = [];
-		
-		foreach( $lines as $line )
-		{
-			// clean the line
-			$line = trim( $line );
-			
-			if ( strpos( $line, ': ' ) !== false )
-			{
-				list( $key, $value ) = explode( ': ', $line );
-				$headers[$key] = $value;
-			}
-		}	
-		
-		// create new request object
-		return new static( $method, $uri, $headers );
-	}
-	
-	/**
-	 * Request constructor
-	 *
-	 * @param string 			$method
-	 * @param string 			$uri
-	 * @param array 			$headers
-	 * @return void
-	 */
-	public function __construct( $method, $uri, $headers = [] ) 
-	{
-		$this->headers = $headers;
-		$this->method = strtoupper( $method );
-		
-		// split uri and parameters string
-		@list( $this->uri, $params ) = explode( '?', $uri );
+    /**
+     * The request headers.
+     *
+     * @var array
+     */
+    protected array $headers = [];
 
-		// parse the parmeters
-		parse_str( $params, $this->parameters );
-	}
-	
-	/**
-	 * Return the request method
-	 *
-	 * @return string
-	 */
-	public function method()
-	{
-		return $this->method;
-	}
-	
-	/**
-	 * Return the request uri
-	 *
-	 * @return string
-	 */
-	public function uri()
-	{
-		return $this->uri;
-	}
-	
-	/**
-	 * Return a request header
-	 *
-	 * @return string
-	 */
-	public function header( $key, $default = null )
-	{
-		if ( !isset( $this->headers[$key] ) )
-		{
-			return $default;
-		}
-		
-		return $this->headers[$key];
-	}
-	
-	/**
-	 * Return a request parameter
-	 *
-	 * @return string
-	 */
-	public function param( $key, $default = null )
-	{
-		if ( !isset( $this->parameters[$key] ) )
-		{
-			return $default;
-		}
-		
-		return $this->parameters[$key];
-	}
-    
+    /**
+     * Create a new Request instance using a string header.
+     *
+     * @param string $header
+     * @return Request
+     */
+    public static function withHeaderString(string $header): Request
+    {
+        $lines = explode("\n", $header);
+
+        // Extract method and URI
+        [$method, $uri] = explode(' ', array_shift($lines), 2);
+
+        $headers = [];
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if (strpos($line, ': ') !== false) {
+                [$key, $value] = explode(': ', $line, 2);
+                $headers[$key] = $value;
+            }
+        }
+
+        // Create a new Request object
+        return new static($method, $uri, $headers);
+    }
+
+    /**
+     * Request constructor.
+     *
+     * @param string $method
+     * @param string $uri
+     * @param array $headers
+     */
+    public function __construct(string $method, string $uri, array $headers = [])
+    {
+        $this->headers = $headers;
+        $this->method = strtoupper($method);
+
+        // Split URI and parameter string
+        [$this->uri, $params] = array_pad(explode('?', $uri, 2), 2, '');
+
+        // Parse the parameters
+        parse_str($params, $this->parameters);
+    }
+
+    /**
+     * Get the request method.
+     *
+     * @return string
+     */
+    public function method(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * Get the request URI.
+     *
+     * @return string
+     */
+    public function uri(): string
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Get a request header.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return string|null
+     */
+    public function header(string $key, $default = null): ?string
+    {
+        return $this->headers[$key] ?? $default;
+    }
+
+    /**
+     * Get a request parameter.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return string|null
+     */
+    public function param(string $key, $default = null): ?string
+    {
+        return $this->parameters[$key] ?? $default;
+    }
 }
