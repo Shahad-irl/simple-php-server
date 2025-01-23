@@ -1,3 +1,4 @@
+
 # PHP Simple Server Project
 
 This repository demonstrates a lightweight PHP server implementation. It includes core functionalities for handling HTTP requests, generating responses, and managing autoloading using class and namespace maps.
@@ -9,6 +10,7 @@ The **PHP Simple Server Project** serves as an educational and foundational tool
 - HTTP request and response handling.
 - PHP autoloading mechanisms with namespaces and class maps.
 - Building scalable and minimalistic server-side applications.
+
 
 ## Features
 
@@ -32,7 +34,6 @@ In real-world scenarios, this project can serve as a starting point for:
 - Learning the fundamentals of server-side development in PHP.
 - Prototyping APIs or microservices.
 - Customizing a lightweight server framework for specific use cases.
-
 ## Why It's Helpful
 
 - **Educational Value**: Simplifies the complexity of frameworks by focusing on core concepts.
@@ -40,7 +41,7 @@ In real-world scenarios, this project can serve as a starting point for:
 - **Efficiency**: Lightweight design for small-scale projects and APIs.
 - **Framework Independence**: Provides a deeper understanding of PHP's capabilities without external dependencies.
 
-## Challenges Addressed
+## Challenges 
 
 1. **Autoloading Complexity**:
 
@@ -57,17 +58,55 @@ In real-world scenarios, this project can serve as a starting point for:
 4. **Compatibility**:
 
    - Fully compatible with PHP 7.4 and later (including PHP 8.x).
-
 ## Installation
 
-1. Clone this repository:
+1. **Clone this repository:**
+```bash
+   git clone https://github.com/Shahad-irl/simple-php-server.git
+  cd my-project
+```
+2. **Navigate the project directory:**
+```bash
+  cd simple-php-server
+```
+3. **Start the PHP built-in server:**
+```bash
+  php -S localhost:8000
+```
+4. **Access the server in your browser at** ```http://localhost:8000``` 
+## Usage/Examples
 
-   ```bash
-   git clone https://github.com/your-username/php-simple-server.git
+1. **Set up the autoloader**
 
-2. Navigate to the project directory:
- 
-   ```bash
-   git clone https://github.com/your-username/php-simple-server.git
+-  Configure ```autoload_classmap.php``` and ```autoload_namespace.php``` to match your class and namespace structure.
 
-   
+2. **Create a server instance:**
+
+```php
+require_once 'ClassLoader.php';
+
+$classLoader = new ClassLoader();
+$classLoader->addClassMap(require 'autoload_classmap.php');
+$classLoader->addNamespaceMap(require 'autoload_namespace.php');
+$classLoader->register();
+
+$server = new Server();
+$server->handleRequest();
+```
+
+#### **Example Response**
+
+Making a request to the server root(```http://localhost:8000```) will return:
+
+```json 
+{
+    "message": "Hello, world!"
+}
+
+```
+
+## Contributing
+
+Contributions are always welcome!
+If you have ideas for improvements or additional features, feel free to fork the repository and submit a pull request.
+
